@@ -4,7 +4,7 @@ from concat import concat
 app = Flask(__name__)
 
 # Expected: "foobar"
-# concat("foo", "bar")
+print(concat("foo", "bar"))
 
 @app.route("/")
 def hello():
