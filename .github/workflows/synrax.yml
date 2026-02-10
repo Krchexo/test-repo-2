@@ -15,19 +15,19 @@ jobs:
 
     # 2. Install language/environment
     
-    - name: Setup Go
-      uses: actions/setup-go@v5
+    - name: Setup Python
+      uses: actions/setup-python@v5
       with:
-        go-version: '1.21'
-        cache: true
+        python-version: '3.10'
+        cache: 'pip'
     
 
     # 3. Build and install dependencies
     - name: Build and Install Dependencies
       run: |
         cd .
-        echo "Running Build Command: go build -o app"
-        go build -o app
+        echo "Running Build Command: pip install -r requirements.txt"
+        pip install -r requirements.txt
 
     # 4. Smoke test
     - name: Start App
@@ -37,27 +37,27 @@ jobs:
         # A. Start the app in the background
         # We redirect stdout/stderr to a log file so we can print it later if needed
         echo "Starting server..."
-        ./app > synrax_app.log 2>&1 &
+        python app.py > synrax_app.log 2>&1 &
         
         # B. Capture the Process ID (PID) so we can kill it later
         APP_PID=$!
         echo "App started with PID $APP_PID"
 
         # C. The Retry Loop (Wait up to 30 seconds)
-        # We try to curl localhost:8080 every 2 seconds
+        # We try to curl localhost:5000 every 2 seconds
         MAX_RETRIES=15
         count=0
         
-        echo "Waiting for service to listen on port 8080..."
+        echo "Waiting for service to listen on port 5000..."
         
         while [ $count -lt $MAX_RETRIES ]; do
-          if curl --silent --fail http://127.0.0.1:8080; then
-            echo "✅ SUCCESS: Server responded on port 8080"
+          if curl --silent --fail http://127.0.0.1:5000; then
+            echo "✅ SUCCESS: Server responded on port 5000"
             kill $APP_PID
             exit 0
           fi
           
-          echo "Port 8080 not ready yet... retrying in 2s"
+          echo "Port 5000 not ready yet... retrying in 2s"
           sleep 2
           count=$((count+1))
         done
