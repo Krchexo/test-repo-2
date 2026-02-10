@@ -15,19 +15,19 @@ jobs:
 
     # 2. Install language/environment
     
-    - name: Setup Python
-      uses: actions/setup-python@v5
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
       with:
-        python-version: '3.10'
-        cache: 'pip'
+        node-version: '20'
+        cache: 'npm'
     
 
     # 3. Build and install dependencies
     - name: Build and Install Dependencies
       run: |
         cd .
-        echo "Running Build Command: pip install -r requirements.txt"
-        pip install -r requirements.txt
+        echo "Running Build Command: npm install"
+        npm install
 
     # 4. Smoke test
     - name: Start App
@@ -37,27 +37,27 @@ jobs:
         # A. Start the app in the background
         # We redirect stdout/stderr to a log file so we can print it later if needed
         echo "Starting server..."
-        python app.py > synrax_app.log 2>&1 &
+        npm start > synrax_app.log 2>&1 &
         
         # B. Capture the Process ID (PID) so we can kill it later
         APP_PID=$!
         echo "App started with PID $APP_PID"
 
         # C. The Retry Loop (Wait up to 30 seconds)
-        # We try to curl localhost:5000 every 2 seconds
+        # We try to curl localhost:3000 every 2 seconds
         MAX_RETRIES=15
         count=0
         
-        echo "Waiting for service to listen on port 5000..."
+        echo "Waiting for service to listen on port 3000..."
         
         while [ $count -lt $MAX_RETRIES ]; do
-          if curl --silent --fail http://127.0.0.1:5000; then
-            echo "✅ SUCCESS: Server responded on port 5000"
+          if curl --silent --fail http://127.0.0.1:3000; then
+            echo "✅ SUCCESS: Server responded on port 3000"
             kill $APP_PID
             exit 0
           fi
           
-          echo "Port 5000 not ready yet... retrying in 2s"
+          echo "Port 3000 not ready yet... retrying in 2s"
           sleep 2
           count=$((count+1))
         done
