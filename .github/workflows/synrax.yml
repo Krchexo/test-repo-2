@@ -15,19 +15,19 @@ jobs:
 
     # 2. Install language/environment
     
-    - name: Setup Python
-      uses: actions/setup-python@v5
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
       with:
-        python-version: '3.10'
-        cache: 'pip'
+        node-version: '20'
+        cache: 'npm'
     
 
     # 3. Build and install dependencies
     - name: Build and Install Dependencies
       run: |
         cd .
-        echo "Running Build Command: pip install -r requirements.txt"
-        pip install -r requirements.txt
+        echo "Running Build Command: npm install"
+        npm install
 
     # 4. Smoke test
     - name: Start Smoke Test
@@ -35,8 +35,8 @@ jobs:
         cd .
         
         # 1. Start App
-        echo "Starting server with: python app.py"
-        python app.py > synrax_app.log 2>&1 &
+        echo "Starting server with: npm start"
+        npm start > synrax_app.log 2>&1 &
         APP_PID=$!
 
         # 2. Wait Loop
@@ -53,13 +53,13 @@ jobs:
           fi
           
           # Port Check
-          if curl --silent --fail http://127.0.0.1:5000; then
-            echo "SUCCESS: Server responded on port 5000"
+          if curl --silent --fail http://127.0.0.1:3000; then
+            echo "SUCCESS: Server responded on port 3000"
             kill $APP_PID 2>/dev/null || true
             exit 0
           fi
           
-          echo "Port 5000 not ready... retrying ($((count+1))/$MAX_RETRIES)"
+          echo "Port 3000 not ready... retrying ($((count+1))/$MAX_RETRIES)"
           sleep 2
           count=$((count+1))
         done
