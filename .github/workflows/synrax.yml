@@ -1,7 +1,7 @@
 name: Synrax Workflow
 on:
   pull_request:
-    branches: [ "main" ]
+    branches: [ "ma" ]
 
 jobs:
   smoke-test:
