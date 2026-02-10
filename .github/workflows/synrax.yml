@@ -48,16 +48,16 @@ jobs:
           # --- CRITICAL CHECK: Did the app crash? ---
           # kill -0 checks if the PID is still running without killing it
           if ! kill -0 $APP_PID 2>/dev/null; then
-            echo "❌ CRITICAL: App process crashed immediately!"
+            echo "❌ CRITICAL: App process crashed!"
             echo "--- Crash Logs ---"
-            cat synrax_app.log
+            tail -n 50 synrax_app.log
             exit 1
           fi
           
           # --- Port Check ---
           if curl --silent --fail http://127.0.0.1:5000; then
             echo "✅ SUCCESS: Server responded on port 5000"
-            kill $APP_PID
+            kill $APP_PID 2>/dev/null || true
             exit 0
           fi
           
